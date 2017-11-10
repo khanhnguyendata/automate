@@ -27,7 +27,7 @@ def write_pages(page_range, pdf_read, pdf_write):
         pdf_write.addPage(page)
 
 
-def reorder_index(filename, insert_page, appendix_start, appendix_end, index_start, index_end):
+def reorder(filename, insert_page, appendix_start, appendix_end, index_start, index_end):
     """
     Reorder the appendix and index of a PDF book to another location and store the new PDF under a new name
     :param filename: name of the PDF file to be reordered
@@ -85,7 +85,7 @@ def main():
             index_end = int(input('Enter the end page of your index: '))
             try:
                 filename = filenames[int(chosen_index-1)]
-                reorder_index(filename, insert_page, appendix_start, appendix_end, index_start, index_end)
+                reorder(filename, insert_page, appendix_start, appendix_end, index_start, index_end)
                 print('\n{} reordered.'.format(filename))
             except Exception as error:
                 print(error)
