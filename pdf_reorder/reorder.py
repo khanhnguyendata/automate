@@ -8,8 +8,8 @@ def get_filenames():
     :return: list of PDF file names
     """
     filenames = []
-    for filename in Path(".").glob("*.pdf"):
-        if "reordered" not in filename.stem:
+    for filename in Path('.').glob('*.pdf'):
+        if 'reordered' not in filename.stem:
             filenames.append(filename)
 
     return filenames
@@ -58,10 +58,10 @@ def reorder(filename, insert_page, appendix_start, appendix_end, index_start, in
 
         # Prepare page ranges to be ordered
         pre_insert = range(insert_page)
-        post_insert = range(insert_page, appendix_start-1)
-        appendix = range(appendix_start-1, appendix_end)
-        post_appendix = range(appendix_end, index_start-1)
-        index = range(index_start-1, index_end)
+        post_insert = range(insert_page, appendix_start - 1)
+        appendix = range(appendix_start - 1, appendix_end)
+        post_appendix = range(appendix_end, index_start - 1)
+        index = range(index_start - 1, index_end)
         post_index = range(index_end, pdf_length)
 
         # Copy pages from original PDF object to new PDF object with the new ordered page ranges
@@ -91,6 +91,7 @@ def appendix_and_index_pages():
     Prompt user to input appendix pages (if one exists) and index pages
     :return: start and end pages of the appendix and index
     """
+
     def index_pages():
         """
         Prompt user to input index pages
@@ -124,13 +125,13 @@ def main():
             print('------')
             print('Unordered PDF files in the current directory: ')
             for index, filename in enumerate(filenames):
-                print('{}: {}'.format(index+1, filename))
+                print('{}: {}'.format(index + 1, filename))
             chosen_index = int(input('\nEnter the number of the file you want to reorder: '))
             insert_page = int(input('Enter the page you want your appendix and index to come after: '))
             appendix_start, appendix_end, index_start, index_end = appendix_and_index_pages()
 
             try:
-                filename = filenames[int(chosen_index-1)]
+                filename = filenames[int(chosen_index - 1)]
                 reorder(filename, insert_page, appendix_start, appendix_end, index_start, index_end)
                 print('\n{} reordered.'.format(filename))
             except Exception as error:
