@@ -15,6 +15,52 @@ def get_filenames():
     return filenames
 
 
+def appendix_and_index_pages():
+    """
+    Prompt user to input appendix pages (if one exists) and index pages
+    :return: start and end pages of the appendix and index
+    """
+
+    def index_pages():
+        """
+        Prompt user to input index pages
+        :return: start and end pages of index
+        """
+        index_start = int(input('Enter the start page of your index: '))
+        index_end = int(input('Enter the end page of your index: '))
+        return index_start, index_end
+
+    is_appendix = yes_or_no('Does your book have an appendix (y/n)? ')
+
+    if is_appendix == 'y':
+        appendix_start = int(input('Enter the start page of your appendix: '))
+        appendix_end = int(input('Enter the end page of your appendix: '))
+        index_start, index_end = index_pages()
+    else:
+        # When there is no appendix, set appendix start and end pages such as the page ranges of the
+        # appendix and the post-appendix (pre-index) will be blank, and the page range of the post-insert
+        # will be from the insert point to the start of the index. See def reorder for more details.
+        index_start, index_end = index_pages()
+        appendix_start = index_start
+        appendix_end = index_start - 1
+
+    return appendix_start, appendix_end, index_start, index_end
+
+
+def yes_or_no(prompt):
+    """
+    Prompt user to answer yes or no to a prompt, and keep asking if user did not input a correct yes/no input
+    :param prompt: str prompting user to input their response
+    :return: yes or no response once user has correctly input their response
+    """
+    response = input(prompt)
+    while response not in ['y', 'n']:
+        print('Invalid input')
+        response = input(prompt)
+
+    return response
+
+
 def write_pages(page_range, pdf_read_object, pdf_write_object):
     """
     Read pages within certain page range from the PDF read object and write those pages to the PDF write object
@@ -72,52 +118,6 @@ def reorder(filename, insert_page, appendix_start, appendix_end, index_start, in
         pdf_write_object.write(write_object)
 
 
-def yes_or_no(prompt):
-    """
-    Prompt user to answer yes or no to a prompt, and keep asking if user did not input a correct yes/no input
-    :param prompt: str prompting user to input their response
-    :return: yes or no response once user has correctly input their response
-    """
-    response = input(prompt)
-    while response not in ['y', 'n']:
-        print('Invalid input')
-        response = input(prompt)
-
-    return response
-
-
-def appendix_and_index_pages():
-    """
-    Prompt user to input appendix pages (if one exists) and index pages
-    :return: start and end pages of the appendix and index
-    """
-
-    def index_pages():
-        """
-        Prompt user to input index pages
-        :return: start and end pages of index
-        """
-        index_start = int(input('Enter the start page of your index: '))
-        index_end = int(input('Enter the end page of your index: '))
-        return index_start, index_end
-
-    is_appendix = yes_or_no('Does your book have an appendix (y/n)? ')
-
-    if is_appendix == 'y':
-        appendix_start = int(input('Enter the start page of your appendix: '))
-        appendix_end = int(input('Enter the end page of your appendix: '))
-        index_start, index_end = index_pages()
-    else:
-        # When there is no appendix, set appendix start and end pages such as the page ranges of the
-        # appendix and the post-appendix (pre-index) will be blank, and the page range of the post-insert
-        # will be from the insert point to the start of the index. See def reorder for more details.
-        index_start, index_end = index_pages()
-        appendix_start = index_start
-        appendix_end = index_start - 1
-
-    return appendix_start, appendix_end, index_start, index_end
-
-
 def main():
     while True:
         print('------')
@@ -126,12 +126,14 @@ def main():
             print('Unordered PDF files in the current directory: ')
             for index, filename in enumerate(filenames):
                 print('{}: {}'.format(index + 1, filename))
-            chosen_index = int(input('\nEnter the number of the file you want to reorder: '))
+            chosen_index = input('\nEnter the number of the file you want to reorder (type q to quit): ')
+            if chosen_index == 'q':
+                break
             insert_page = int(input('Enter the page you want your appendix and index to come after: '))
             appendix_start, appendix_end, index_start, index_end = appendix_and_index_pages()
 
             try:
-                filename = filenames[chosen_index - 1]
+                filename = filenames[int(chosen_index) - 1]
                 reorder(filename, insert_page, appendix_start, appendix_end, index_start, index_end)
                 print('\n{} reordered.'.format(filename))
             except Exception as error:
