@@ -120,9 +120,9 @@ def appendix_and_index_pages():
 
 def main():
     while True:
+        print('------')
         filenames = get_filenames()
         if filenames:
-            print('------')
             print('Unordered PDF files in the current directory: ')
             for index, filename in enumerate(filenames):
                 print('{}: {}'.format(index + 1, filename))
