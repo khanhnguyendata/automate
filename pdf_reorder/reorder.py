@@ -131,7 +131,7 @@ def main():
             appendix_start, appendix_end, index_start, index_end = appendix_and_index_pages()
 
             try:
-                filename = filenames[int(chosen_index - 1)]
+                filename = filenames[chosen_index - 1]
                 reorder(filename, insert_page, appendix_start, appendix_end, index_start, index_end)
                 print('\n{} reordered.'.format(filename))
             except Exception as error:
