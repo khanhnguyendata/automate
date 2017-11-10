@@ -15,17 +15,17 @@ def get_filenames():
     return filenames
 
 
-def write_pages(page_range, pdf_read, pdf_write):
+def write_pages(page_range, pdf_read_object, pdf_write_object):
     """
     Read pages within certain page range from the PDF read object and write those pages to the PDF write object
     :param page_range: iterable containing pages to be read and written
-    :param pdf_read: PyPDF2.PdfFileReader object where pages are read from
-    :param pdf_write: PyPDF2.PdfFileWriter object where pages are written to
-    :return: None. pdf_write is modified in place.
+    :param pdf_read_object: PyPDF2.PdfFileReader object where pages are read from
+    :param pdf_write_object: PyPDF2.PdfFileWriter object where pages are written to
+    :return: None, write object is modified in place.
     """
     for page_num in page_range:
-        page = pdf_read.getPage(page_num)
-        pdf_write.addPage(page)
+        page = pdf_read_object.getPage(page_num)
+        pdf_write_object.addPage(page)
 
 
 def reorder(filename, insert_page, appendix_start, appendix_end, index_start, index_end):
@@ -39,10 +39,10 @@ def reorder(filename, insert_page, appendix_start, appendix_end, index_start, in
     :param index_end: index end page in the original PDF
     :return: a reordered PDF (ending with '_reordered.pdf') in the same directory as the original PDF
     """
-    with filename.open('rb') as file_read, open(filename.stem + '_reordered.pdf', 'wb') as file_write:
-        pdf_read = PyPDF2.PdfFileReader(file_read)
-        pdf_write = PyPDF2.PdfFileWriter()
-        pdf_length = pdf_read.numPages
+    with filename.open('rb') as read_object, open(filename.stem + '_reordered.pdf', 'wb') as write_object:
+        pdf_read_object = PyPDF2.PdfFileReader(read_object)
+        pdf_write_object = PyPDF2.PdfFileWriter()
+        pdf_length = pdf_read_object.numPages
 
         # Check for invalid page numbers
         if insert_page < 1 or insert_page >= appendix_start:
@@ -66,10 +66,10 @@ def reorder(filename, insert_page, appendix_start, appendix_end, index_start, in
 
         # Copy pages from original PDF object to new PDF object with the new ordered page ranges
         for page_range in [pre_insert, index, appendix, post_insert, post_appendix, post_index]:
-            write_pages(page_range, pdf_read, pdf_write)
+            write_pages(page_range, pdf_read_object, pdf_write_object)
 
         # Write ordered PDF object to PDF file
-        pdf_write.write(file_write)
+        pdf_write_object.write(write_object)
 
 
 def yes_or_no(prompt):
