@@ -86,11 +86,11 @@ def main():
             try:
                 filename = filenames[int(chosen_index-1)]
                 reorder_index(filename, insert_page, appendix_start, appendix_end, index_start, index_end)
+                print('\n{} reordered.'.format(filename))
             except Exception as error:
                 print(error)
                 print('Restarting program\n')
                 continue
-            print('\n{} reordered.'.format(filename))
         else:
             print('No unordered PDF found in current directory')
 
