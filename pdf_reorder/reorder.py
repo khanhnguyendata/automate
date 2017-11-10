@@ -72,6 +72,20 @@ def reorder(filename, insert_page, appendix_start, appendix_end, index_start, in
         pdf_write.write(file_write)
 
 
+def yes_or_no(prompt):
+    """
+    Prompt user to answer yes or no to a prompt, and keep asking if user did not input a correct yes/no input
+    :param prompt: str prompting user to input their response
+    :return: yes or no response once user has correctly input their response
+    """
+    response = input(prompt)
+    while response not in ['y', 'n']:
+        print('Invalid input')
+        response = input(prompt)
+
+    return response
+
+
 def appendix_and_index_pages():
     """
     Prompt user to input appendix pages (if one exists) and index pages
@@ -86,10 +100,7 @@ def appendix_and_index_pages():
         index_end = int(input('Enter the end page of your index: '))
         return index_start, index_end
 
-    is_appendix = input('Does your book have an appendix (y/n)? ')
-    while is_appendix not in ['y', 'n']:
-        print('Invalid input')
-        is_appendix = input("Does your book have an appendix (y/n)? ")
+    is_appendix = yes_or_no('Does your book have an appendix (y/n)? ')
 
     if is_appendix == 'y':
         appendix_start = int(input('Enter the start page of your appendix: '))
@@ -130,10 +141,7 @@ def main():
             print('No unordered PDF found in current directory')
 
         # Ask user to reorder additional PDFs
-        is_continue = input('\nDo you want to reorder another PDF (y/n)? ')
-        while is_continue not in ['y', 'n']:
-            print('Invalid input')
-            is_continue = input("Do you want to reorder another PDF (y/n)? ")
+        is_continue = yes_or_no('\nDo you want to reorder another PDF (y/n)? ')
         if is_continue == 'n':
             break
 
