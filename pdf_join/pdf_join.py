@@ -1,43 +1,40 @@
 from pathlib import Path
-from pprint import pprint
 import PyPDF2
 
 
-def join_pdf(folder):
-    write_pdf = PyPDF2.PdfFileWriter()
+def join_pdf(folder, destination):
+    """
+    Merge all PDFs in a folder (including all subfolders) and store merged PDF in specified path
+    :param destination: path (str) where the merged PDF will be stored
+    :param folder: pathlib.Path object
+    :return: merged PDF in the folder
+    """
+    merge_pdf = PyPDF2.PdfFileMerger()
 
     for pdf_path in folder.glob('**/*.pdf'):
-        print(pdf_path)
-        read_object = open(pdf_path, 'rb')
-        read_pdf = PyPDF2.PdfFileReader(read_object)
+        with open(pdf_path, 'rb') as read_object:
+            read_pdf = PyPDF2.PdfFileReader(read_object)
+            merge_pdf.append(read_pdf)
 
-        for page in range(read_pdf.numPages):
-            page_object = read_pdf.getPage(page)
-            write_pdf.addPage(page_object)
-        read_object.close()
+    with open(destination + '/joined_{}.pdf'.format(folder.stem), 'wb') as merge_object:
+        merge_pdf.write(merge_object)
 
-    with open('joined.pdf', 'wb') as write_object:
-        write_pdf.write(write_object)
+
+def join_pdf_in_subfolders(folder):
+    """
+    For each subfolder in the folder, find all PDF recursively in that subfolder, merge them in a PDF,
+    and store the merged PDFs in the root folder
+    :param folder: root folder (str) where merged PDFs will be stored
+    :return: merged PDFs from the subfolders will be stored in the root folder
+    """
+    path_object = Path(folder)
+    subfolders = [subfolder for subfolder in path_object.iterdir() if subfolder.is_dir()]
+    for subfolder in subfolders:
+        join_pdf(subfolder, folder)
 
 
 def main():
-    # folder = Path(r'C:\Projects\JHU\R-programming\notes\r-programming\01_week-1-background-getting-started-and-nuts-bolts')
-    # join_pdf(folder)
-    write_pdf = PyPDF2.PdfFileWriter()
-
-    for path in [r'C:\Projects\JHU\R-programming\notes\r-programming\01_week-1-background-getting-started-and-nuts-bolts\01_background-material\01_welcome-to-r-programming_JHDSS_CourseDependencies.pdf',
-                 r'C:\Projects\JHU\R-programming\notes\r-programming\01_week-1-background-getting-started-and-nuts-bolts\01_background-material\04_syllabus_JHSPH-StudentReferencing_handbook.pdf']:
-        read_object = open(path, 'rb')
-        read_pdf = PyPDF2.PdfFileReader(read_object)
-        for page in range(read_pdf.numPages):
-            page_object = read_pdf.getPage(page)
-            write_pdf.addPage(page_object)
-        read_object.close()
-
-    write_object = open('joined.pdf', 'wb')
-    write_pdf.write(write_object)
-
-    write_object.close()
+    join_pdf_in_subfolders(r'C:\Projects\JHU\R-programming\notes\r-programming')
 
 
 if __name__ == '__main__':
